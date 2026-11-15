@@ -4,10 +4,6 @@ import com.partyplaylist.model.enums.TrackSource;
 
 import java.time.LocalDateTime;
 
-/**
- * Трек из общего каталога. Музыка задаётся либо файлом (audioPath),
- * либо ссылкой на YouTube (youtubeUrl) — в зависимости от sourceType.
- */
 public class Track {
     private Long id;
     private String title;
@@ -58,7 +54,6 @@ public class Track {
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    /** Для JSP: ${track.file} — трек загружен файлом. */
     public boolean isFile() {
         return sourceType == TrackSource.FILE;
     }

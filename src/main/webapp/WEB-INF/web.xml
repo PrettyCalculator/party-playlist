@@ -6,8 +6,6 @@
 
     <display-name>Party Playlist</display-name>
 
-    <!-- Сервлеты, фильтры и listener регистрируются аннотациями (@WebServlet, @WebFilter, @WebListener) -->
-
     <session-config>
         <session-timeout>60</session-timeout>
         <cookie-config>
@@ -20,7 +18,6 @@
         <jsp-property-group>
             <url-pattern>*.jsp</url-pattern>
             <page-encoding>UTF-8</page-encoding>
-            <!-- запрет Java-кода в JSP: скриптлеты <% %> вызовут ошибку компиляции -->
             <scripting-invalid>true</scripting-invalid>
             <trim-directive-whitespaces>true</trim-directive-whitespaces>
         </jsp-property-group>

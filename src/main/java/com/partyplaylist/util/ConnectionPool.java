@@ -3,7 +3,6 @@ package com.partyplaylist.util;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-/** Создаёт пул соединений HikariCP по настройкам приложения. */
 public final class ConnectionPool {
 
     private ConnectionPool() {

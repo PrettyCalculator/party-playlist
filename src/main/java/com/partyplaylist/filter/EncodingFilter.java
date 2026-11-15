@@ -10,7 +10,6 @@ import jakarta.servlet.annotation.WebFilter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-/** Выставляет UTF-8 для всех запросов и ответов, чтобы кириллица из форм не ломалась. */
 @WebFilter("/*")
 public class EncodingFilter implements Filter {
 

@@ -22,11 +22,6 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * Точка сборки приложения: при старте создаёт пул соединений, папки файлового
- * хранилища и (на следующем шаге) DAO и сервисы, складывая их в ServletContext.
- * При остановке приложения закрывает пул.
- */
 @WebListener
 public class AppContextListener implements ServletContextListener {
 
@@ -72,7 +67,6 @@ public class AppContextListener implements ServletContextListener {
 
     private void checkConnection(HikariDataSource dataSource) {
         try (Connection ignored = dataSource.getConnection()) {
-            // соединение открылось — БД доступна
         } catch (SQLException e) {
             dataSource.close();
             throw new IllegalStateException("Нет подключения к БД: " + e.getMessage(), e);

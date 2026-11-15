@@ -4,7 +4,6 @@ import com.partyplaylist.model.enums.PartyTrackStatus;
 
 import java.time.LocalDateTime;
 
-/** Трек в очереди конкретной вечеринки. */
 public class PartyTrack {
     private Long id;
     private Long partyId;

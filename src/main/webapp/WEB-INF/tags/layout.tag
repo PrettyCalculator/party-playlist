@@ -16,7 +16,6 @@
         <a class="logo" href="${ctx}/">Party<span>Playlist</span></a>
         <nav class="nav">
             <a href="${ctx}/">Главная</a>
-            <%-- ссылки на вечеринки, треки и вход появятся на следующих шагах --%>
         </nav>
     </div>
 </header>

@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-/** Главная страница. Пустой маппинг "" соответствует корню приложения. */
 @WebServlet("")
 public class HomeServlet extends HttpServlet {
 
