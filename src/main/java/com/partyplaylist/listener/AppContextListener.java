@@ -1,5 +1,12 @@
 package com.partyplaylist.listener;
 
+import com.partyplaylist.dao.jdbc.JdbcGenreDao;
+import com.partyplaylist.dao.jdbc.JdbcPartyDao;
+import com.partyplaylist.dao.jdbc.JdbcPartyMemberDao;
+import com.partyplaylist.dao.jdbc.JdbcPartyTrackDao;
+import com.partyplaylist.dao.jdbc.JdbcTrackDao;
+import com.partyplaylist.dao.jdbc.JdbcUserDao;
+import com.partyplaylist.dao.jdbc.JdbcVoteDao;
 import com.partyplaylist.util.AppConfig;
 import com.partyplaylist.util.ConnectionPool;
 import com.partyplaylist.util.ContextKeys;
@@ -44,7 +51,13 @@ public class AppContextListener implements ServletContextListener {
         ctx.setAttribute(ContextKeys.DATA_SOURCE, dataSource);
         ctx.setAttribute(ContextKeys.STORAGE_DIR, storageDir);
 
-        // TODO: создать DAO и сервисы и положить их в контекст
+        ctx.setAttribute(ContextKeys.USER_DAO, new JdbcUserDao(dataSource));
+        ctx.setAttribute(ContextKeys.GENRE_DAO, new JdbcGenreDao(dataSource));
+        ctx.setAttribute(ContextKeys.TRACK_DAO, new JdbcTrackDao(dataSource));
+        ctx.setAttribute(ContextKeys.PARTY_DAO, new JdbcPartyDao(dataSource));
+        ctx.setAttribute(ContextKeys.PARTY_MEMBER_DAO, new JdbcPartyMemberDao(dataSource));
+        ctx.setAttribute(ContextKeys.PARTY_TRACK_DAO, new JdbcPartyTrackDao(dataSource));
+        ctx.setAttribute(ContextKeys.VOTE_DAO, new JdbcVoteDao(dataSource));
 
         ctx.log("Party Playlist запущен, хранилище: " + storageDir);
     }
