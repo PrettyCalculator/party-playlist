@@ -1,5 +1,12 @@
 package com.partyplaylist.listener;
 
+import com.partyplaylist.dao.GenreDao;
+import com.partyplaylist.dao.PartyDao;
+import com.partyplaylist.dao.PartyMemberDao;
+import com.partyplaylist.dao.PartyTrackDao;
+import com.partyplaylist.dao.TrackDao;
+import com.partyplaylist.dao.UserDao;
+import com.partyplaylist.dao.VoteDao;
 import com.partyplaylist.dao.jdbc.JdbcGenreDao;
 import com.partyplaylist.dao.jdbc.JdbcPartyDao;
 import com.partyplaylist.dao.jdbc.JdbcPartyMemberDao;
@@ -7,6 +14,11 @@ import com.partyplaylist.dao.jdbc.JdbcPartyTrackDao;
 import com.partyplaylist.dao.jdbc.JdbcTrackDao;
 import com.partyplaylist.dao.jdbc.JdbcUserDao;
 import com.partyplaylist.dao.jdbc.JdbcVoteDao;
+import com.partyplaylist.service.FileStorageService;
+import com.partyplaylist.service.PartyService;
+import com.partyplaylist.service.QueueService;
+import com.partyplaylist.service.TrackService;
+import com.partyplaylist.service.UserService;
 import com.partyplaylist.util.AppConfig;
 import com.partyplaylist.util.ConnectionPool;
 import com.partyplaylist.util.ContextKeys;
@@ -16,8 +28,6 @@ import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -33,26 +43,28 @@ public class AppContextListener implements ServletContextListener {
         HikariDataSource dataSource = ConnectionPool.create(config);
         checkConnection(dataSource);
 
+        UserDao userDao = new JdbcUserDao(dataSource);
+        GenreDao genreDao = new JdbcGenreDao(dataSource);
+        TrackDao trackDao = new JdbcTrackDao(dataSource);
+        PartyDao partyDao = new JdbcPartyDao(dataSource);
+        PartyMemberDao partyMemberDao = new JdbcPartyMemberDao(dataSource);
+        PartyTrackDao partyTrackDao = new JdbcPartyTrackDao(dataSource);
+        VoteDao voteDao = new JdbcVoteDao(dataSource);
+
         Path storageDir = Path.of(config.get("storage.dir")).toAbsolutePath();
-        try {
-            Files.createDirectories(storageDir.resolve("audio"));
-            Files.createDirectories(storageDir.resolve("covers"));
-        } catch (IOException e) {
-            dataSource.close();
-            throw new IllegalStateException("Не удалось создать хранилище " + storageDir, e);
-        }
+        FileStorageService fileStorageService = new FileStorageService(storageDir);
+        UserService userService = new UserService(userDao);
+        TrackService trackService = new TrackService(trackDao, genreDao, fileStorageService);
+        PartyService partyService = new PartyService(partyDao, partyMemberDao);
+        QueueService queueService = new QueueService(partyTrackDao, voteDao, trackDao, partyService);
 
         ctx.setAttribute(ContextKeys.CONFIG, config);
         ctx.setAttribute(ContextKeys.DATA_SOURCE, dataSource);
-        ctx.setAttribute(ContextKeys.STORAGE_DIR, storageDir);
-
-        ctx.setAttribute(ContextKeys.USER_DAO, new JdbcUserDao(dataSource));
-        ctx.setAttribute(ContextKeys.GENRE_DAO, new JdbcGenreDao(dataSource));
-        ctx.setAttribute(ContextKeys.TRACK_DAO, new JdbcTrackDao(dataSource));
-        ctx.setAttribute(ContextKeys.PARTY_DAO, new JdbcPartyDao(dataSource));
-        ctx.setAttribute(ContextKeys.PARTY_MEMBER_DAO, new JdbcPartyMemberDao(dataSource));
-        ctx.setAttribute(ContextKeys.PARTY_TRACK_DAO, new JdbcPartyTrackDao(dataSource));
-        ctx.setAttribute(ContextKeys.VOTE_DAO, new JdbcVoteDao(dataSource));
+        ctx.setAttribute(ContextKeys.USER_SERVICE, userService);
+        ctx.setAttribute(ContextKeys.FILE_STORAGE_SERVICE, fileStorageService);
+        ctx.setAttribute(ContextKeys.TRACK_SERVICE, trackService);
+        ctx.setAttribute(ContextKeys.PARTY_SERVICE, partyService);
+        ctx.setAttribute(ContextKeys.QUEUE_SERVICE, queueService);
 
         ctx.log("Party Playlist запущен, хранилище: " + storageDir);
     }

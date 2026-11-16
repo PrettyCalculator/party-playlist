@@ -13,7 +13,6 @@ public class Party {
     private PartyPhase phase = PartyPhase.WARMUP;
     private PartyStatus status = PartyStatus.DRAFT;
     private int maxSuggestionsPerGuest = 5;
-    private boolean noArtistRepeat = true;
     private LocalDateTime createdAt;
 
     public Long getId() { return id; }
@@ -36,9 +35,6 @@ public class Party {
 
     public int getMaxSuggestionsPerGuest() { return maxSuggestionsPerGuest; }
     public void setMaxSuggestionsPerGuest(int maxSuggestionsPerGuest) { this.maxSuggestionsPerGuest = maxSuggestionsPerGuest; }
-
-    public boolean isNoArtistRepeat() { return noArtistRepeat; }
-    public void setNoArtistRepeat(boolean noArtistRepeat) { this.noArtistRepeat = noArtistRepeat; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }

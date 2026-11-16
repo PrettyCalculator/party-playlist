@@ -49,7 +49,6 @@ public class JdbcPartyTrackDao implements PartyTrackDao {
 
     private static final String FIND_QUEUE = SELECT_ITEMS + "ORDER BY rating DESC, pt.added_at";
     private static final String FIND_CURRENT = SELECT_ITEMS + "LIMIT 1";
-    private static final String FIND_LAST_PLAYED = SELECT_ITEMS + "ORDER BY pt.played_at DESC LIMIT 1";
 
     private final DataSource dataSource;
 
@@ -122,15 +121,6 @@ public class JdbcPartyTrackDao implements PartyTrackDao {
     }
 
     @Override
-    public Optional<QueueItem> findLastPlayed(Long partyId) {
-        List<QueueItem> items = findItems(FIND_LAST_PLAYED, partyId, null, PartyTrackStatus.PLAYED);
-        if (items.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(items.get(0));
-    }
-
-    @Override
     public void updateStatus(Long id, PartyTrackStatus status) {
         String sql = status == PartyTrackStatus.PLAYED ? UPDATE_STATUS_PLAYED : UPDATE_STATUS;
         try (Connection con = dataSource.getConnection();
@@ -140,6 +130,34 @@ public class JdbcPartyTrackDao implements PartyTrackDao {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DaoException("Не удалось обновить статус трека в очереди с id " + id, e);
+        }
+    }
+
+    @Override
+    public void switchCurrent(Long currentId, Long nextId) {
+        try (Connection con = dataSource.getConnection()) {
+            con.setAutoCommit(false);
+            try (PreparedStatement playedPs = con.prepareStatement(UPDATE_STATUS_PLAYED);
+                 PreparedStatement playingPs = con.prepareStatement(UPDATE_STATUS)) {
+                if (currentId != null) {
+                    playedPs.setString(1, PartyTrackStatus.PLAYED.name());
+                    playedPs.setLong(2, currentId);
+                    playedPs.executeUpdate();
+                }
+                if (nextId != null) {
+                    playingPs.setString(1, PartyTrackStatus.PLAYING.name());
+                    playingPs.setLong(2, nextId);
+                    playingPs.executeUpdate();
+                }
+                con.commit();
+            } catch (SQLException e) {
+                con.rollback();
+                throw e;
+            } finally {
+                con.setAutoCommit(true);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Не удалось переключить текущий трек", e);
         }
     }
 

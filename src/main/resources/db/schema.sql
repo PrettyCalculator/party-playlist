@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS votes, party_tracks, party_members, parties, tracks, genres
 CREATE TABLE users (
     id            BIGSERIAL PRIMARY KEY,
     username      VARCHAR(32)  NOT NULL UNIQUE,
-    password_hash VARCHAR(60)  NOT NULL,
+    password_hash VARCHAR(64)  NOT NULL,
     created_at    TIMESTAMP    NOT NULL DEFAULT now()
 );
 
@@ -41,7 +41,6 @@ CREATE TABLE parties (
     status                    VARCHAR(10)  NOT NULL DEFAULT 'DRAFT'
                               CHECK (status IN ('DRAFT', 'LIVE', 'FINISHED')),
     max_suggestions_per_guest SMALLINT     NOT NULL DEFAULT 5 CHECK (max_suggestions_per_guest BETWEEN 1 AND 50),
-    no_artist_repeat          BOOLEAN      NOT NULL DEFAULT TRUE,
     created_at                TIMESTAMP    NOT NULL DEFAULT now()
 );
 

@@ -7,10 +7,15 @@ import com.partyplaylist.model.Vote;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class JdbcVoteDao implements VoteDao {
 
+    private static final String FIND =
+            "SELECT user_id, party_track_id, value, created_at FROM votes WHERE user_id = ? AND party_track_id = ?";
     private static final String UPSERT =
             "INSERT INTO votes (user_id, party_track_id, value) VALUES (?, ?, ?) " +
             "ON CONFLICT (user_id, party_track_id) DO UPDATE SET value = EXCLUDED.value, created_at = now()";
@@ -21,6 +26,28 @@ public class JdbcVoteDao implements VoteDao {
 
     public JdbcVoteDao(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    @Override
+    public Optional<Vote> find(Long userId, Long partyTrackId) {
+        try (Connection con = dataSource.getConnection();
+             PreparedStatement ps = con.prepareStatement(FIND)) {
+            ps.setLong(1, userId);
+            ps.setLong(2, partyTrackId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(new Vote(
+                            rs.getLong("user_id"),
+                            rs.getLong("party_track_id"),
+                            rs.getInt("value"),
+                            rs.getObject("created_at", LocalDateTime.class)
+                    ));
+                }
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Не удалось найти голос за трек " + partyTrackId, e);
+        }
     }
 
     @Override

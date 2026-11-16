@@ -22,16 +22,16 @@ public class JdbcPartyDao implements PartyDao {
 
     private static final String COLUMNS =
             "p.id, p.host_id, p.title, p.join_code, p.phase, p.status, " +
-            "p.max_suggestions_per_guest, p.no_artist_repeat, p.created_at";
+            "p.max_suggestions_per_guest, p.created_at";
 
     private static final String INSERT_PARTY =
             "INSERT INTO parties (host_id, title, join_code, phase, status, " +
-            "max_suggestions_per_guest, no_artist_repeat) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            "max_suggestions_per_guest) VALUES (?, ?, ?, ?, ?, ?)";
     private static final String INSERT_HOST =
             "INSERT INTO party_members (party_id, user_id, role) VALUES (?, ?, ?)";
     private static final String UPDATE =
             "UPDATE parties SET title = ?, phase = ?, status = ?, " +
-            "max_suggestions_per_guest = ?, no_artist_repeat = ? WHERE id = ?";
+            "max_suggestions_per_guest = ? WHERE id = ?";
     private static final String DELETE = "DELETE FROM parties WHERE id = ?";
     private static final String FIND_BY_ID = "SELECT " + COLUMNS + " FROM parties p WHERE p.id = ?";
     private static final String FIND_BY_JOIN_CODE = "SELECT " + COLUMNS + " FROM parties p WHERE p.join_code = ?";
@@ -59,7 +59,6 @@ public class JdbcPartyDao implements PartyDao {
                 partyPs.setString(4, party.getPhase().name());
                 partyPs.setString(5, party.getStatus().name());
                 partyPs.setInt(6, party.getMaxSuggestionsPerGuest());
-                partyPs.setBoolean(7, party.isNoArtistRepeat());
                 partyPs.executeUpdate();
                 try (ResultSet keys = partyPs.getGeneratedKeys()) {
                     if (keys.next()) {
@@ -93,8 +92,7 @@ public class JdbcPartyDao implements PartyDao {
             ps.setString(2, party.getPhase().name());
             ps.setString(3, party.getStatus().name());
             ps.setInt(4, party.getMaxSuggestionsPerGuest());
-            ps.setBoolean(5, party.isNoArtistRepeat());
-            ps.setLong(6, party.getId());
+            ps.setLong(5, party.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DaoException("Не удалось обновить вечеринку с id " + party.getId(), e);
@@ -182,7 +180,6 @@ public class JdbcPartyDao implements PartyDao {
         party.setPhase(PartyPhase.valueOf(rs.getString("phase")));
         party.setStatus(PartyStatus.valueOf(rs.getString("status")));
         party.setMaxSuggestionsPerGuest(rs.getInt("max_suggestions_per_guest"));
-        party.setNoArtistRepeat(rs.getBoolean("no_artist_repeat"));
         party.setCreatedAt(rs.getObject("created_at", LocalDateTime.class));
         return party;
     }

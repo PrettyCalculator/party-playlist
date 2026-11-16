@@ -19,9 +19,9 @@ public interface PartyTrackDao {
 
     Optional<QueueItem> findCurrent(Long partyId);
 
-    Optional<QueueItem> findLastPlayed(Long partyId);
-
     void updateStatus(Long id, PartyTrackStatus status);
+
+    void switchCurrent(Long currentId, Long nextId);
 
     int countSuggestedBy(Long partyId, Long userId);
 }
