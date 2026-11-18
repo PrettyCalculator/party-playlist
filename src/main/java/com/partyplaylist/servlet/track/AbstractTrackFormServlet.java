@@ -5,17 +5,16 @@ import com.partyplaylist.model.Party;
 import com.partyplaylist.model.Track;
 import com.partyplaylist.service.PartyService;
 import com.partyplaylist.service.TrackService;
+import com.partyplaylist.servlet.BaseServlet;
 import com.partyplaylist.util.ContextKeys;
-import com.partyplaylist.util.WebUtils;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Map;
 
-public abstract class AbstractTrackFormServlet extends HttpServlet {
+public abstract class AbstractTrackFormServlet extends BaseServlet {
     protected TrackService trackService;
     protected PartyService partyService;
 
@@ -43,6 +42,6 @@ public abstract class AbstractTrackFormServlet extends HttpServlet {
         req.setAttribute("errors", errors);
         req.setAttribute("track", track);
         req.setAttribute("genres", trackService.getGenres());
-        WebUtils.forward(req, resp, "tracks/form");
+        forward(req, resp, "tracks/form");
     }
 }

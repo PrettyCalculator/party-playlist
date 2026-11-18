@@ -5,9 +5,7 @@ import com.partyplaylist.model.Track;
 import com.partyplaylist.service.FileStorageService;
 import com.partyplaylist.service.TrackService;
 import com.partyplaylist.util.ContextKeys;
-import com.partyplaylist.util.WebUtils;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -16,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @WebServlet("/media")
-public class MediaServlet extends HttpServlet {
+public class MediaServlet extends BaseServlet {
     private TrackService trackService;
     private FileStorageService fileStorage;
 
@@ -28,7 +26,7 @@ public class MediaServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        Track track = trackService.findById(WebUtils.getId(req, "track"));
+        Track track = trackService.findById(getId(req, "track"));
         String path = "cover".equals(req.getParameter("type")) ? track.getCoverPath() : track.getAudioPath();
         if (path == null) {
             throw new NotFoundException("Файл не найден");

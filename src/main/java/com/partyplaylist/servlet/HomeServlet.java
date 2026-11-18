@@ -3,14 +3,13 @@ package com.partyplaylist.servlet;
 import com.partyplaylist.model.enums.PartyPhase;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
 @WebServlet("")
-public class HomeServlet extends HttpServlet {
+public class HomeServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)

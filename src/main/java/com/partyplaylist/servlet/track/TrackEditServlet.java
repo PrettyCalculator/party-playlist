@@ -4,7 +4,6 @@ import com.partyplaylist.dto.TrackForm;
 import com.partyplaylist.exception.BusinessException;
 import com.partyplaylist.exception.ValidationException;
 import com.partyplaylist.model.Track;
-import com.partyplaylist.util.WebUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -19,13 +18,13 @@ public class TrackEditServlet extends AbstractTrackFormServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Long userId = WebUtils.getUserId(req);
-        Track track = trackService.findById(WebUtils.getId(req, "id"));
+        Long userId = getUserId(req);
+        Track track = trackService.findById(getId(req, "id"));
         try {
             trackService.getEditableTrack(track.getId(), userId);
         } catch (BusinessException e) {
-            WebUtils.flashError(req, e.getMessage());
-            WebUtils.redirect(req, resp, "/party?id=" + track.getPartyId());
+            flashError(req, e.getMessage());
+            redirect(req, resp, "/party?id=" + track.getPartyId());
             return;
         }
 
@@ -42,18 +41,18 @@ public class TrackEditServlet extends AbstractTrackFormServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Long userId = WebUtils.getUserId(req);
-        Track track = trackService.findById(WebUtils.getId(req, "id"));
+        Long userId = getUserId(req);
+        Track track = trackService.findById(getId(req, "id"));
         TrackForm form = readForm(req);
         try {
             trackService.update(track.getId(), form, req.getPart("audio"), req.getPart("cover"), userId);
-            WebUtils.flash(req, "Трек сохранён");
-            WebUtils.redirect(req, resp, "/party?id=" + track.getPartyId());
+            flash(req, "Трек сохранён");
+            redirect(req, resp, "/party?id=" + track.getPartyId());
         } catch (ValidationException e) {
             showForm(req, resp, partyService.getById(track.getPartyId()), form, e.getErrors(), track);
         } catch (BusinessException e) {
-            WebUtils.flashError(req, e.getMessage());
-            WebUtils.redirect(req, resp, "/party?id=" + track.getPartyId());
+            flashError(req, e.getMessage());
+            redirect(req, resp, "/party?id=" + track.getPartyId());
         }
     }
 }

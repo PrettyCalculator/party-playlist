@@ -14,4 +14,8 @@ public enum PartyStatus {
     public String getTitle() {
         return title;
     }
+
+    public String getKey() {
+        return name().toLowerCase();
+    }
 }

@@ -8,6 +8,14 @@
             Создай вечеринку, поделись кодом — гости предлагают треки и голосуют,
             а очередь подстраивается под фазу вечера.
         </p>
+        <c:choose>
+            <c:when test="${not empty sessionScope.user}">
+                <a class="btn" href="${pageContext.request.contextPath}/parties">К моим вечеринкам</a>
+            </c:when>
+            <c:otherwise>
+                <a class="btn" href="${pageContext.request.contextPath}/register">Начать</a>
+            </c:otherwise>
+        </c:choose>
     </section>
 
     <section class="phases">

@@ -1,7 +1,6 @@
 package com.partyplaylist.servlet.party;
 
 import com.partyplaylist.exception.ValidationException;
-import com.partyplaylist.util.WebUtils;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -16,7 +15,7 @@ public class PartyVoteServlet extends AbstractPartyActionServlet {
         } catch (NumberFormatException e) {
             throw new ValidationException("vote", "Неверный голос");
         }
-        queueService.vote(WebUtils.getId(req, "trackId"), userId, value);
+        queueService.vote(getId(req, "trackId"), userId, value);
         return null;
     }
 }
