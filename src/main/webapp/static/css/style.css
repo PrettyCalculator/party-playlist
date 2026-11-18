@@ -68,13 +68,6 @@ a {
     padding: 24px 16px;
 }
 
-.footer {
-    padding: 16px 0;
-    border-top: 1px solid #ddd;
-    color: #666;
-    font-size: 0.875rem;
-}
-
 .nav__user {
     font-weight: 600;
 }

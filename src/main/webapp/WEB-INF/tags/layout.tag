@@ -43,9 +43,6 @@
     <jsp:doBody/>
 </main>
 
-<footer class="footer">
-    <div class="container">Party Playlist · семестровая работа</div>
-</footer>
 <script src="${ctx}/static/js/app.js"></script>
 </body>
 </html>
