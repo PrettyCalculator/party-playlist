@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public interface VoteDao {
 
-    Optional<Vote> find(Long userId, Long partyTrackId);
+    Optional<Vote> find(Long userId, Long trackId);
 
     void vote(Vote vote);
 
-    void removeVote(Long userId, Long partyTrackId);
+    void removeVote(Long userId, Long trackId);
 }

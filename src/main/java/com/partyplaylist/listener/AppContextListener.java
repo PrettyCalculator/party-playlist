@@ -3,14 +3,12 @@ package com.partyplaylist.listener;
 import com.partyplaylist.dao.GenreDao;
 import com.partyplaylist.dao.PartyDao;
 import com.partyplaylist.dao.PartyMemberDao;
-import com.partyplaylist.dao.PartyTrackDao;
 import com.partyplaylist.dao.TrackDao;
 import com.partyplaylist.dao.UserDao;
 import com.partyplaylist.dao.VoteDao;
 import com.partyplaylist.dao.jdbc.JdbcGenreDao;
 import com.partyplaylist.dao.jdbc.JdbcPartyDao;
 import com.partyplaylist.dao.jdbc.JdbcPartyMemberDao;
-import com.partyplaylist.dao.jdbc.JdbcPartyTrackDao;
 import com.partyplaylist.dao.jdbc.JdbcTrackDao;
 import com.partyplaylist.dao.jdbc.JdbcUserDao;
 import com.partyplaylist.dao.jdbc.JdbcVoteDao;
@@ -48,15 +46,14 @@ public class AppContextListener implements ServletContextListener {
         TrackDao trackDao = new JdbcTrackDao(dataSource);
         PartyDao partyDao = new JdbcPartyDao(dataSource);
         PartyMemberDao partyMemberDao = new JdbcPartyMemberDao(dataSource);
-        PartyTrackDao partyTrackDao = new JdbcPartyTrackDao(dataSource);
         VoteDao voteDao = new JdbcVoteDao(dataSource);
 
         Path storageDir = Path.of(config.get("storage.dir")).toAbsolutePath();
         FileStorageService fileStorageService = new FileStorageService(storageDir);
         UserService userService = new UserService(userDao);
-        TrackService trackService = new TrackService(trackDao, genreDao, fileStorageService);
-        PartyService partyService = new PartyService(partyDao, partyMemberDao);
-        QueueService queueService = new QueueService(partyTrackDao, voteDao, trackDao, partyService);
+        PartyService partyService = new PartyService(partyDao, partyMemberDao, trackDao, fileStorageService);
+        TrackService trackService = new TrackService(trackDao, genreDao, fileStorageService, partyService);
+        QueueService queueService = new QueueService(trackDao, voteDao, partyService);
 
         ctx.setAttribute(ContextKeys.CONFIG, config);
         ctx.setAttribute(ContextKeys.DATA_SOURCE, dataSource);

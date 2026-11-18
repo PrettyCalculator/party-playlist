@@ -1,8 +1,8 @@
 package com.partyplaylist.model.enums;
 
-public enum PartyTrackStatus {
+public enum TrackStatus {
     QUEUED,
     PLAYING,
     PLAYED,
-    VETOED
+    REJECTED
 }

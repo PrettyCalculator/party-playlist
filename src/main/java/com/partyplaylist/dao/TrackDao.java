@@ -1,6 +1,8 @@
 package com.partyplaylist.dao;
 
+import com.partyplaylist.dto.QueueItem;
 import com.partyplaylist.model.Track;
+import com.partyplaylist.model.enums.TrackStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +17,15 @@ public interface TrackDao {
 
     Optional<Track> findById(Long id);
 
-    List<Track> findAll();
+    List<Track> findByParty(Long partyId);
 
-    List<Track> findByUploader(Long userId);
+    List<QueueItem> findQueue(Long partyId, Long userId);
 
-    List<Track> search(String query, Integer genreId);
+    Optional<QueueItem> findCurrent(Long partyId);
+
+    void updateStatus(Long id, TrackStatus status);
+
+    void switchCurrent(Long currentId, Long nextId);
+
+    int countSuggestedBy(Long partyId, Long userId);
 }

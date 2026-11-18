@@ -15,12 +15,12 @@ import java.util.Optional;
 public class JdbcVoteDao implements VoteDao {
 
     private static final String FIND =
-            "SELECT user_id, party_track_id, value, created_at FROM votes WHERE user_id = ? AND party_track_id = ?";
+            "SELECT user_id, track_id, value, created_at FROM votes WHERE user_id = ? AND track_id = ?";
     private static final String UPSERT =
-            "INSERT INTO votes (user_id, party_track_id, value) VALUES (?, ?, ?) " +
-            "ON CONFLICT (user_id, party_track_id) DO UPDATE SET value = EXCLUDED.value, created_at = now()";
+            "INSERT INTO votes (user_id, track_id, value) VALUES (?, ?, ?) " +
+            "ON CONFLICT (user_id, track_id) DO UPDATE SET value = EXCLUDED.value, created_at = now()";
     private static final String DELETE =
-            "DELETE FROM votes WHERE user_id = ? AND party_track_id = ?";
+            "DELETE FROM votes WHERE user_id = ? AND track_id = ?";
 
     private final DataSource dataSource;
 
@@ -29,16 +29,16 @@ public class JdbcVoteDao implements VoteDao {
     }
 
     @Override
-    public Optional<Vote> find(Long userId, Long partyTrackId) {
+    public Optional<Vote> find(Long userId, Long trackId) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement ps = con.prepareStatement(FIND)) {
             ps.setLong(1, userId);
-            ps.setLong(2, partyTrackId);
+            ps.setLong(2, trackId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return Optional.of(new Vote(
                             rs.getLong("user_id"),
-                            rs.getLong("party_track_id"),
+                            rs.getLong("track_id"),
                             rs.getInt("value"),
                             rs.getObject("created_at", LocalDateTime.class)
                     ));
@@ -46,7 +46,7 @@ public class JdbcVoteDao implements VoteDao {
                 return Optional.empty();
             }
         } catch (SQLException e) {
-            throw new DaoException("Не удалось найти голос за трек " + partyTrackId, e);
+            throw new DaoException("Не удалось найти голос за трек " + trackId, e);
         }
     }
 
@@ -55,23 +55,23 @@ public class JdbcVoteDao implements VoteDao {
         try (Connection con = dataSource.getConnection();
              PreparedStatement ps = con.prepareStatement(UPSERT)) {
             ps.setLong(1, vote.userId());
-            ps.setLong(2, vote.partyTrackId());
+            ps.setLong(2, vote.trackId());
             ps.setInt(3, vote.value());
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException("Не удалось сохранить голос за трек " + vote.partyTrackId(), e);
+            throw new DaoException("Не удалось сохранить голос за трек " + vote.trackId(), e);
         }
     }
 
     @Override
-    public void removeVote(Long userId, Long partyTrackId) {
+    public void removeVote(Long userId, Long trackId) {
         try (Connection con = dataSource.getConnection();
              PreparedStatement ps = con.prepareStatement(DELETE)) {
             ps.setLong(1, userId);
-            ps.setLong(2, partyTrackId);
+            ps.setLong(2, trackId);
             ps.executeUpdate();
         } catch (SQLException e) {
-            throw new DaoException("Не удалось удалить голос за трек " + partyTrackId, e);
+            throw new DaoException("Не удалось удалить голос за трек " + trackId, e);
         }
     }
 }

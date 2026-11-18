@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS votes, party_tracks, party_members, parties, tracks, genres, users CASCADE;
+DROP TABLE IF EXISTS votes, party_tracks, tracks, party_members, parties, genres, users CASCADE;
 
 CREATE TABLE users (
     id            BIGSERIAL PRIMARY KEY,
@@ -10,25 +10,6 @@ CREATE TABLE users (
 CREATE TABLE genres (
     id   SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
-);
-
-CREATE TABLE tracks (
-    id           BIGSERIAL PRIMARY KEY,
-    title        VARCHAR(200) NOT NULL,
-    artist       VARCHAR(200) NOT NULL,
-    genre_id     INT          REFERENCES genres (id) ON DELETE SET NULL,
-    energy       SMALLINT     NOT NULL CHECK (energy BETWEEN 1 AND 5),
-    duration_sec INT          CHECK (duration_sec > 0),
-    source_type  VARCHAR(10)  NOT NULL CHECK (source_type IN ('FILE', 'YOUTUBE')),
-    audio_path   VARCHAR(255),
-    youtube_url  VARCHAR(500),
-    cover_path   VARCHAR(255),
-    uploaded_by  BIGINT       NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    created_at   TIMESTAMP    NOT NULL DEFAULT now(),
-    CONSTRAINT tracks_source_chk CHECK (
-        (source_type = 'FILE'    AND audio_path  IS NOT NULL AND youtube_url IS NULL) OR
-        (source_type = 'YOUTUBE' AND youtube_url IS NOT NULL AND audio_path  IS NULL)
-    )
 );
 
 CREATE TABLE parties (
@@ -52,29 +33,38 @@ CREATE TABLE party_members (
     PRIMARY KEY (party_id, user_id)
 );
 
-CREATE TABLE party_tracks (
+CREATE TABLE tracks (
     id           BIGSERIAL PRIMARY KEY,
-    party_id     BIGINT      NOT NULL REFERENCES parties (id) ON DELETE CASCADE,
-    track_id     BIGINT      NOT NULL REFERENCES tracks (id) ON DELETE CASCADE,
-    suggested_by BIGINT      NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    status       VARCHAR(10) NOT NULL DEFAULT 'QUEUED'
-                 CHECK (status IN ('QUEUED', 'PLAYING', 'PLAYED', 'VETOED')),
-    added_at     TIMESTAMP   NOT NULL DEFAULT now(),
+    party_id     BIGINT       NOT NULL REFERENCES parties (id) ON DELETE CASCADE,
+    suggested_by BIGINT       NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    title        VARCHAR(200) NOT NULL,
+    artist       VARCHAR(200) NOT NULL,
+    genre_id     INT          REFERENCES genres (id) ON DELETE SET NULL,
+    energy       SMALLINT     NOT NULL CHECK (energy BETWEEN 1 AND 5),
+    source_type  VARCHAR(10)  NOT NULL CHECK (source_type IN ('FILE', 'YOUTUBE')),
+    audio_path   VARCHAR(255),
+    youtube_url  VARCHAR(500),
+    cover_path   VARCHAR(255),
+    status       VARCHAR(10)  NOT NULL DEFAULT 'QUEUED'
+                 CHECK (status IN ('QUEUED', 'PLAYING', 'PLAYED', 'REJECTED')),
+    added_at     TIMESTAMP    NOT NULL DEFAULT now(),
     played_at    TIMESTAMP,
-    UNIQUE (party_id, track_id)
+    CONSTRAINT tracks_source_chk CHECK (
+        (source_type = 'FILE'    AND audio_path  IS NOT NULL AND youtube_url IS NULL) OR
+        (source_type = 'YOUTUBE' AND youtube_url IS NOT NULL AND audio_path  IS NULL)
+    )
 );
 
 CREATE TABLE votes (
-    user_id        BIGINT    NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    party_track_id BIGINT    NOT NULL REFERENCES party_tracks (id) ON DELETE CASCADE,
-    value          SMALLINT  NOT NULL CHECK (value IN (-1, 1)),
-    created_at     TIMESTAMP NOT NULL DEFAULT now(),
-    PRIMARY KEY (user_id, party_track_id)
+    user_id    BIGINT    NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    track_id   BIGINT    NOT NULL REFERENCES tracks (id) ON DELETE CASCADE,
+    value      SMALLINT  NOT NULL CHECK (value IN (-1, 1)),
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    PRIMARY KEY (user_id, track_id)
 );
 
-CREATE INDEX idx_tracks_uploaded_by ON tracks (uploaded_by);
 CREATE INDEX idx_parties_host ON parties (host_id);
-CREATE INDEX idx_party_tracks_party_status ON party_tracks (party_id, status);
+CREATE INDEX idx_tracks_party_status ON tracks (party_id, status);
 
 INSERT INTO genres (name) VALUES
     ('Поп'), ('Рок'), ('Хип-хоп'), ('Электроника'), ('R&B'), ('Инди'), ('Джаз'), ('Другое');

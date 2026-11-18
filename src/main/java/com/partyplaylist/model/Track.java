@@ -1,25 +1,34 @@
 package com.partyplaylist.model;
 
 import com.partyplaylist.model.enums.TrackSource;
+import com.partyplaylist.model.enums.TrackStatus;
 
 import java.time.LocalDateTime;
 
 public class Track {
     private Long id;
+    private Long partyId;
+    private Long suggestedBy;
     private String title;
     private String artist;
     private Integer genreId;
     private int energy;
-    private Integer durationSec;
     private TrackSource sourceType;
     private String audioPath;
     private String youtubeUrl;
     private String coverPath;
-    private Long uploadedBy;
-    private LocalDateTime createdAt;
+    private TrackStatus status = TrackStatus.QUEUED;
+    private LocalDateTime addedAt;
+    private LocalDateTime playedAt;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public Long getPartyId() { return partyId; }
+    public void setPartyId(Long partyId) { this.partyId = partyId; }
+
+    public Long getSuggestedBy() { return suggestedBy; }
+    public void setSuggestedBy(Long suggestedBy) { this.suggestedBy = suggestedBy; }
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
@@ -33,9 +42,6 @@ public class Track {
     public int getEnergy() { return energy; }
     public void setEnergy(int energy) { this.energy = energy; }
 
-    public Integer getDurationSec() { return durationSec; }
-    public void setDurationSec(Integer durationSec) { this.durationSec = durationSec; }
-
     public TrackSource getSourceType() { return sourceType; }
     public void setSourceType(TrackSource sourceType) { this.sourceType = sourceType; }
 
@@ -48,11 +54,14 @@ public class Track {
     public String getCoverPath() { return coverPath; }
     public void setCoverPath(String coverPath) { this.coverPath = coverPath; }
 
-    public Long getUploadedBy() { return uploadedBy; }
-    public void setUploadedBy(Long uploadedBy) { this.uploadedBy = uploadedBy; }
+    public TrackStatus getStatus() { return status; }
+    public void setStatus(TrackStatus status) { this.status = status; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public LocalDateTime getAddedAt() { return addedAt; }
+    public void setAddedAt(LocalDateTime addedAt) { this.addedAt = addedAt; }
+
+    public LocalDateTime getPlayedAt() { return playedAt; }
+    public void setPlayedAt(LocalDateTime playedAt) { this.playedAt = playedAt; }
 
     public boolean isFile() {
         return sourceType == TrackSource.FILE;
