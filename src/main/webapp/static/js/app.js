@@ -1,5 +1,3 @@
-"use strict";
-
 document.addEventListener("submit", function (event) {
     const form = event.target;
 

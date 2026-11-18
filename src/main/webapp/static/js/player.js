@@ -1,5 +1,3 @@
-"use strict";
-
 document.addEventListener("DOMContentLoaded", function () {
     const nextForm = document.getElementById("next-form");
     if (nextForm === null) {

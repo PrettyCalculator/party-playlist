@@ -1,5 +1,3 @@
-"use strict";
-
 document.addEventListener("DOMContentLoaded", function () {
     const radios = document.querySelectorAll("input[name=sourceType]");
     const blocks = document.querySelectorAll("[data-source]");
