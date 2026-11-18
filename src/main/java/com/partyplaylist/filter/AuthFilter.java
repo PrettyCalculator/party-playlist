@@ -1,12 +1,13 @@
 package com.partyplaylist.filter;
 
-import com.partyplaylist.util.WebUtils;
+import com.partyplaylist.util.SessionKeys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,15 +22,16 @@ public class AuthFilter extends HttpFilter {
     protected void doFilter(HttpServletRequest req, HttpServletResponse resp, FilterChain chain)
             throws IOException, ServletException {
         String path = req.getServletPath();
-        boolean loggedIn = WebUtils.getUser(req) != null;
+        HttpSession session = req.getSession(false);
+        boolean loggedIn = session != null && session.getAttribute(SessionKeys.USER) != null;
         boolean publicPath = PUBLIC_PATHS.contains(path) || path.startsWith("/static/");
 
         if (loggedIn && GUEST_ONLY_PATHS.contains(path)) {
-            WebUtils.redirect(req, resp, "/parties");
+            resp.sendRedirect(req.getContextPath() + "/parties");
             return;
         }
         if (!loggedIn && !publicPath) {
-            WebUtils.redirect(req, resp, "/login");
+            resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
         chain.doFilter(req, resp);
